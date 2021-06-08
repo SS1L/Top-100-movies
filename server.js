@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 
 const dbName = require('./config/database.config');
 
-app.use(bodyParser.urlencoded({ extended: true }))
+require('dotenv').config();
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 mongoose.Promise = global.Promise;
