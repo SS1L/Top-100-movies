@@ -6,8 +6,10 @@ exports.findMovie = async (req, res) => {
     const { movie } = req.body;
 
     const userData = await axios.get(`${process.env.URL}${movie}`);
-    const checkedData = userData.data?.results[0];
-    if (!checkedData) return res.json('Something wrong!');
+    if (!userData.data) return res.status(400).json('Something wrong!');
+
+    const checkedData = userData.data?.results?.[0];
+    if (!checkedData) return res.status(400).json('Something wrong!');
 
     const { title, overview, release_date: releaseDate } = checkedData;
     res.json({ title, overview, releaseDate });
