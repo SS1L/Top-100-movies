@@ -61,11 +61,25 @@ exports.listMovies = async (req, res) => {
   }
 };
 
-exports.updateMovie = (req, res) => {
+exports.updateMovie = async (req, res) => {
   try {
+    // newMovie, newPlace
+    const { movie, newMovie } = req.body;
+
+    const userMovie = await Note.find({ movie });
+    if (!userMovie.length) throw new SyntaxError(`Can't find ${movie} in your list`);
+
+    const addNewMovie = await Note.find({ newMovie });
+    if (addNewMovie.length) throw new SyntaxError(`You have ${newMovie} in your list`);
+
+    await Note.findOneAndUpdate(movie, { movie: newMovie });
     res.json('All work');
   } catch (e) {
-    console.log(e);
+    if (e.name === 'SyntaxError') {
+      res.status(400).json(e.message);
+    } else {
+      res.json(e);
+    }
   }
 };
 
