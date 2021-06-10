@@ -19,19 +19,35 @@ exports.findMovie = async (req, res) => {
 };
 
 exports.addMovie = async (req, res) => {
-  // const user = req.body.user;
   try {
     const { movie, place } = req.body;
-    console.log(`movie: ${movie}, place: ${place}`);
-    const data = await axios.get(process.env.URL + movie).then((r) => r.data.results[0]);
-    if (!data) return res.status(400).send('Can`t find this movie!');
+    const checkedMovie = await Note.find({ movie });
 
-    res.status(200).json({
-      title: data['original_title'],
-      overview: data['overview'],
-      release_date: data['release_date']
+    if (checkedMovie.length) throw new SyntaxError('You add this film before');
+
+    const checkedPlace = await Note.find({ place });
+    if (checkedPlace.length) throw new SyntaxError('You use this place before');
+
+    const userData = await axios.get(`${process.env.URL}?api_key=${process.env.API_KEY}&query=${movie}`);
+    if (!userData.data) throw new SyntaxError('Can`t find a movie!');
+
+    const checkedData = userData.data?.results?.[0];
+    if (!checkedData) throw new SyntaxError('Problem with results!');
+
+    const { release_date: releaseDate } = checkedData;
+    await Note.create({
+      place, movie, releaseDate,
     });
+    res.json('Film added');
   } catch (e) {
-    console.log(e);
+    if (e.name === 'SyntaxError') {
+      res.status(400).json(e.message);
+    } else {
+      res.json(e);
+    }
   }
+};
+
+exports.listMovies = (req, res) => {
+  console.log('all work');
 };

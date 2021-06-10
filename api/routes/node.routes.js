@@ -19,12 +19,16 @@ module.exports = (app) => {
   app.post('/add',
     [
       check('movie')
-        .isLength({ min: 1})
+        .isLength({ min: 1 })
         .withMessage('The name must have minimum length of 1')
         .trim(),
       check('place')
-        .isInt(),
+        .isInt({ min: 1, max: 100 })
+        .withMessage('Must between 1 to 100'),
     ],
     validate,
     notes.addMovie);
+
+  app.get('/list',
+    notes.listMovies);
 };
