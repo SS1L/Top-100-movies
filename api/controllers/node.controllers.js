@@ -15,7 +15,7 @@ exports.findMovie = async (req, res) => {
     res.json({ title, overview, releaseDate });
   } catch (e) {
     if (e.name === 'SyntaxError') {
-      res.send(400).json(e.message);
+      res.status(400).json(e.message);
     } else {
       res.json(e);
     }
@@ -42,7 +42,7 @@ exports.addMovie = async (req, res) => {
     await Note.create({
       place, movie, releaseDate,
     });
-    res.json('Film added');
+    res.json(`${movie} was added`);
   } catch (e) {
     if (e.name === 'SyntaxError') {
       res.status(400).json(e.message);
@@ -74,16 +74,15 @@ exports.deleteMovie = async (req, res) => {
     const { movie } = req.body;
 
     const userMovie = await Note.find({ movie });
-    if (userMovie.length) throw new SyntaxError('Didn`t find a movie');
-    console.log(userMovie);
-    const data = await Note.deleteOne({ userMovie });
-    console.log(data.deletedCount);
-    res.json('all work!');
+    if (!userMovie.length) throw new SyntaxError('Didn`t find a movie');
+
+    await Note.deleteOne({ movie });
+    res.json(`${movie} deleted from your list`);
   } catch (e) {
     if (e.name === 'SyntaxError') {
-      res.send(400).json(e.message);
+      res.status(400).json(e.message);
     } else {
-      console.log(e);
+      res.json(e);
     }
   }
 };
