@@ -24,7 +24,7 @@ module.exports = (app) => {
         .trim(),
       check('place')
         .isInt({ min: 1, max: 100 })
-        .withMessage('Must between 1 to 100'),
+        .withMessage('Number must be between 1 to 100'),
     ],
     validate,
     notes.addMovie);

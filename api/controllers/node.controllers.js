@@ -48,6 +48,11 @@ exports.addMovie = async (req, res) => {
   }
 };
 
-exports.listMovies = (req, res) => {
-  console.log('all work');
+exports.listMovies = async (req, res) => {
+  try {
+    const data = await Note.find({});
+    res.json(data);
+  } catch (e) {
+    console.log(e);
+  }
 };
