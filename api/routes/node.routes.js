@@ -29,6 +29,12 @@ module.exports = (app) => {
     validate,
     notes.addMovie);
 
+  app.put('/update',
+    notes.updateMovie);
+
+  app.delete('/deleteMovie',
+    notes.deleteMovie);
+
   app.get('/list',
     notes.listMovies);
 };
