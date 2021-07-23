@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Note = require('../modules/note.model');
+const Note = require('../modules/movie.model');
 
 exports.findMovie = async (req, res) => {
   try {
@@ -57,7 +57,7 @@ exports.listMovies = async (req, res) => {
     const data = await Note.find({});
     res.json(data);
   } catch (e) {
-    console.log(e);
+    res.json(e);
   }
 };
 
