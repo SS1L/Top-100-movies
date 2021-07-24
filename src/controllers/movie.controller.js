@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Note = require('../modules/movie.model');
+const Movie = require('../models/movie.model');
 
 exports.findMovie = async (req, res) => {
   try {
@@ -25,11 +25,11 @@ exports.findMovie = async (req, res) => {
 exports.addMovie = async (req, res) => {
   try {
     const { movie, place } = req.body;
-    const checkedMovie = await Note.find({ movie });
+    const checkedMovie = await Movie.find({ movie });
 
     if (checkedMovie.length) throw new SyntaxError('You add this film before');
 
-    const checkedPlace = await Note.find({ place });
+    const checkedPlace = await Movie.find({ place });
     if (checkedPlace.length) throw new SyntaxError('You use this place before');
 
     const userData = await axios.get(`${process.env.URL}?api_key=${process.env.API_KEY}&query=${movie}`);
@@ -39,7 +39,7 @@ exports.addMovie = async (req, res) => {
     if (!checkedData) throw new SyntaxError('Problem with results!');
 
     const { release_date: releaseDate } = checkedData;
-    await Note.create({
+    await Movie.create({
       place, movie, releaseDate,
     });
     res.json(`${movie} was added`);
@@ -54,7 +54,7 @@ exports.addMovie = async (req, res) => {
 
 exports.listMovies = async (req, res) => {
   try {
-    const data = await Note.find({});
+    const data = await Movie.find({});
     res.json(data);
   } catch (e) {
     res.json(e);
@@ -66,13 +66,13 @@ exports.updateMovie = async (req, res) => {
     // newMovie, newPlace
     const { movie, newMovie } = req.body;
 
-    const userMovie = await Note.find({ movie });
+    const userMovie = await Movie.find({ movie });
     if (!userMovie.length) throw new SyntaxError(`Can't find ${movie} in your list`);
 
-    const addNewMovie = await Note.find({ newMovie });
+    const addNewMovie = await Movie.find({ newMovie });
     if (addNewMovie.length) throw new SyntaxError(`You have ${newMovie} in your list`);
 
-    await Note.findOneAndUpdate(movie, { movie: newMovie });
+    await Movie.findOneAndUpdate(movie, { movie: newMovie });
     res.json('All work');
   } catch (e) {
     if (e.name === 'SyntaxError') {
@@ -87,10 +87,10 @@ exports.deleteMovie = async (req, res) => {
   try {
     const { movie } = req.body;
 
-    const userMovie = await Note.find({ movie });
+    const userMovie = await Movie.find({ movie });
     if (!userMovie.length) throw new SyntaxError('Didn`t find a movie');
 
-    await Note.deleteOne({ movie });
+    await Movie.deleteOne({ movie });
     res.json(`${movie} deleted from your list`);
   } catch (e) {
     if (e.name === 'SyntaxError') {
