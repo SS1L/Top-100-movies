@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const { check } = require('express-validator');
+const authMiddleware = require('../middlewares/auth.middleware');
 const notes = require('../controllers/movie.controller');
-const { validate } = require('../middleware/validation');
+const { validate } = require('../middlewares/validation');
 
 router.get(
   '/',
