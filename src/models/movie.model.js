@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const NoteSchema = new Schema({
+const MovieSchema = new Schema({
   place: {
     type: Number,
     required: true,
@@ -13,6 +13,10 @@ const NoteSchema = new Schema({
     type: String,
     required: true,
   },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'users',
+  },
 });
 
-module.exports = model('movie', NoteSchema);
+module.exports = model('movie', MovieSchema);

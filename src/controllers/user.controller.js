@@ -23,7 +23,7 @@ const registration = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  const { refreshToken } = req.cookies;
+  const refreshToken = req.headers.authorization;
   try {
     await userService.logout(refreshToken);
 
@@ -33,8 +33,9 @@ const logout = async (req, res) => {
   }
 };
 
+// need fix
 const refresh = async (req, res) => {
-  const { refreshToken } = req.cookies;
+  const refreshToken = req.headers.authorization;
   try {
     const userData = await userService.refresh(refreshToken);
 

@@ -1,102 +1,66 @@
-const axios = require('axios');
 const Movie = require('../models/movie.model');
+const movieService = require('../service/movie.service');
 
-exports.findMovie = async (req, res) => {
+const findMovie = async (req, res) => {
+  const { movie } = req.body;
   try {
-    const { movie } = req.body;
+    const movieData = await movieService.searchMovie(movie);
 
-    const userData = await axios.get(`${process.env.URL}?api_key=${process.env.API_KEY}&query=${movie}`);
-    if (!userData.data) throw new SyntaxError('Something wrong!');
-
-    const checkedData = userData.data?.results?.[0];
-    if (!checkedData) throw new SyntaxError('Can`t find results!');
-
-    const { title, overview, release_date: releaseDate } = checkedData;
-    res.json({ title, overview, releaseDate });
+    res.json(movieData);
   } catch (e) {
-    if (e.name === 'SyntaxError') {
-      res.status(400).json(e.message);
-    } else {
-      res.json(e);
-    }
+    res.json({ error: e.message });
   }
 };
 
-exports.addMovie = async (req, res) => {
+const addMovie = async (req, res) => {
+  const { movie, place } = req.body;
   try {
-    const { movie, place } = req.body;
-    const checkedMovie = await Movie.find({ movie });
+    const newMovie = await movieService.createMovie(movie, place, req.user);
 
-    if (checkedMovie.length) throw new SyntaxError('You add this film before');
-
-    const checkedPlace = await Movie.find({ place });
-    if (checkedPlace.length) throw new SyntaxError('You use this place before');
-
-    const userData = await axios.get(`${process.env.URL}?api_key=${process.env.API_KEY}&query=${movie}`);
-    if (!userData.data) throw new SyntaxError('Can`t find a movie!');
-
-    const checkedData = userData.data?.results?.[0];
-    if (!checkedData) throw new SyntaxError('Problem with results!');
-
-    const { release_date: releaseDate } = checkedData;
-    await Movie.create({
-      place, movie, releaseDate,
-    });
-    res.json(`${movie} was added`);
+    res.json({ message: `${movie} was added`, data: newMovie });
   } catch (e) {
-    if (e.name === 'SyntaxError') {
-      res.status(400).json(e.message);
-    } else {
-      res.json(e);
-    }
+    res.json(e.message);
   }
 };
 
-exports.listMovies = async (req, res) => {
+const listMovies = async (req, res) => {
   try {
-    const data = await Movie.find({});
-    res.json(data);
+    const userData = await movieService.listMovies(req.user);
+
+    res.json({ data: userData });
   } catch (e) {
     res.json(e);
   }
 };
 
-exports.updateMovie = async (req, res) => {
+// need fix
+const updateMovie = async (req, res) => {
+  const { movie, newMovie } = req.body;
   try {
-    // newMovie, newPlace
-    const { movie, newMovie } = req.body;
+    // newMovie, newPlace ?
+    const movieData = await movieService.renewMovie(movie, newMovie, req.user);
 
-    const userMovie = await Movie.find({ movie });
-    if (!userMovie.length) throw new SyntaxError(`Can't find ${movie} in your list`);
-
-    const addNewMovie = await Movie.find({ newMovie });
-    if (addNewMovie.length) throw new SyntaxError(`You have ${newMovie} in your list`);
-
-    await Movie.findOneAndUpdate(movie, { movie: newMovie });
-    res.json('All work');
+    res.json({ message: 'Movie has already updated', data: movieData });
   } catch (e) {
-    if (e.name === 'SyntaxError') {
-      res.status(400).json(e.message);
-    } else {
-      res.json(e);
-    }
+    res.json({ error: e.message });
   }
 };
 
-exports.deleteMovie = async (req, res) => {
+const deleteMovie = async (req, res) => {
+  const { movie } = req.body;
   try {
-    const { movie } = req.body;
+    await movieService.deleteMovie(movie, req.user);
 
-    const userMovie = await Movie.find({ movie });
-    if (!userMovie.length) throw new SyntaxError('Didn`t find a movie');
-
-    await Movie.deleteOne({ movie });
     res.json(`${movie} deleted from your list`);
   } catch (e) {
-    if (e.name === 'SyntaxError') {
-      res.status(400).json(e.message);
-    } else {
-      res.json(e);
-    }
+    res.json({ error: e.message });
   }
+};
+
+module.exports = {
+  findMovie,
+  addMovie,
+  listMovies,
+  updateMovie,
+  deleteMovie,
 };

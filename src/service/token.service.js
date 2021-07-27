@@ -22,9 +22,18 @@ const removeToken = async (refreshToken) => {
   await TokenSchema.deleteOne({ refreshToken });
 };
 
-const validateRefreshToken = (refreshToken) => {
+const validateRefreshToken = (token) => {
   try {
-    const userData = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
+    const userData = jwt.verify(token, process.env.REFRESH_TOKEN);
+    return userData;
+  } catch (e) {
+    return null;
+  }
+};
+
+const validateAccessToken = (token) => {
+  try {
+    const userData = jwt.verify(token, process.env.ACCESS_TOKEN);
     return userData;
   } catch (e) {
     return null;
@@ -41,5 +50,6 @@ module.exports = {
   saveToken,
   removeToken,
   validateRefreshToken,
+  validateAccessToken,
   findToken,
 };

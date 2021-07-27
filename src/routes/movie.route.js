@@ -1,11 +1,12 @@
 const router = require('express').Router();
 const { check } = require('express-validator');
 const authMiddleware = require('../middlewares/auth.middleware');
-const notes = require('../controllers/movie.controller');
+const movie = require('../controllers/movie.controller');
 const { validate } = require('../middlewares/validation');
 
 router.get(
   '/',
+  authMiddleware,
   [
     check('movie')
       .isLength({ min: 1 })
@@ -13,9 +14,12 @@ router.get(
       .trim(),
   ],
   validate,
-  notes.findMovie,
+  movie.findMovie,
 );
-router.post('/add',
+
+router.post(
+  '/add',
+  authMiddleware,
   [
     check('movie')
       .isLength({ min: 1 })
@@ -26,9 +30,12 @@ router.post('/add',
       .withMessage('Number must be between 1 to 100'),
   ],
   validate,
-  notes.addMovie);
+  movie.addMovie,
+);
 
-router.put('/update',
+router.put(
+  '/update',
+  authMiddleware,
   [
     check('movie')
       .isLength({ min: 1 })
@@ -37,16 +44,24 @@ router.put('/update',
       .isLength({ min: 1 })
       .withMessage('The name must have minimum length of 1'),
   ],
-  notes.updateMovie);
+  movie.updateMovie,
+);
 
-router.delete('/deleteMovie',
+router.delete(
+  '/deleteMovie',
+  authMiddleware,
   [
     check('movie')
       .isLength({ min: 1 })
       .withMessage('The name must have minimum length of 1'),
   ],
-  notes.deleteMovie);
-router.get('/list',
-  notes.listMovies);
+  movie.deleteMovie,
+);
+
+router.get(
+  '/list',
+  authMiddleware,
+  movie.listMovies,
+);
 
 module.exports = router;
