@@ -33,7 +33,6 @@ const listMovies = async (req, res) => {
   }
 };
 
-// need fix
 const updateMovie = async (req, res) => {
   const { movie, newMovie } = req.body;
   try {

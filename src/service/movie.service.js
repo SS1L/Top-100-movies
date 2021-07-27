@@ -74,15 +74,20 @@ const renewMovie = async (movie, newMovie, user) => {
   const userMovie = await movieSchema.find({ user: user.id, movie });
   if (!userMovie.length) throw new Error('Cant find movie in db');
 
+  const latestMovieInDb = await movieSchema.find({ user: user.id, newMovie });
+  if (latestMovieInDb.length) throw new Error('You add this movie before');
+
   const latestMovie = await movieDetail(newMovie);
-  const updateMovie = await movieSchema.findOneAndUpdate(
-    { user: user.id },
+  const updateMovie = await movieSchema.updateOne(
+    {
+      user: user.id,
+      place: userMovie[0].place,
+    },
     {
       $set:
       {
         movie: latestMovie.title,
         releaseDate: latestMovie.release_date,
-        place: userMovie[0].place,
       },
     },
   );
