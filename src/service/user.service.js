@@ -1,14 +1,14 @@
 const bcrypt = require('bcrypt');
 const UsersSchema = require('../models/user.model');
 const UserDto = require('../dtos/user.dto');
-const tokenService = require('./token.servie');
+const tokenService = require('./token.service');
 
 const tokenEntry = async (user) => {
   const userDto = new UserDto(user);
   const tokens = tokenService.generateToken({ ...userDto });
   await tokenService.saveToken(userDto.id, tokens.refreshToken);
 
-  return { tokens, userDto };
+  return tokens;
 };
 
 const registration = async (email, password) => {

@@ -5,7 +5,6 @@ const login = async (req, res) => {
   try {
     const userData = await userService.login(email, password);
 
-    res.cookie('refreshToken', userData.tokens.refreshToken);
     res.status(200).json(userData);
   } catch (e) {
     res.json({ error: e.message });
@@ -38,7 +37,7 @@ const refresh = async (req, res) => {
   const { refreshToken } = req.cookies;
   try {
     const userData = await userService.refresh(refreshToken);
-    res.cookie('refreshToken', userData.tokens.refreshToken);
+
     res.json(userData);
   } catch (e) {
     res.json({ error: e.message });
